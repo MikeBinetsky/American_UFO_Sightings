@@ -1,30 +1,36 @@
-// Admittedly found these first two on Stack Overflow
+// Admittedly found this on Stack Overflow
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-d3.selectAll("button").on("click", function(){
-    resetMap()
-    var firstYear = document.getElementById("startingYear").value;
-    var lastYear = document.getElementById("endingYear").value;
-    var ufo = ufo_sightings;
-    createMap(ufo, firstYear, lastYear)
-    }
-)
+// // This is for customization options to be added
+// d3.selectAll("button").on("click", function(){
+//     resetMap()
+//     var firstYear = document.getElementById("startingYear").value;
+//     var lastYear = document.getElementById("endingYear").value;
+//     var ufo = ufo_sightings;
+//     createMap(ufo, firstYear, lastYear)
+//     }
+// )
 
 function createMap(ufoData, startingYear, endingYear) {
-    var myMap = L.map("map", {
-        center: [30.0902, -95.7129],
-        zoom: 3
-    });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(myMap)
+    })
+
+    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
 
     let years = checkYears(startingYear, endingYear)
     var start = years[0]
     var end = years[1]
+
+    var baseMaps = {
+        Street: street,
+        Topography: topo
+      };
 
     async function createMarkers(data){
         for (var i = 0; i < data.length; i++) {
@@ -44,10 +50,16 @@ function createMap(ufoData, startingYear, endingYear) {
                 }}
     };
 
+    var myMap = L.map("map", {
+        center: [30.0902, -95.7129],
+        zoom: 3.4,
+        layers: [street, topo]
+    });
+
     createMarkers(ufoData)
 };
 
-defaultStartingYear = 2010
+defaultStartingYear = 1949
 defaultEndingYear = 2014
 
 function checkYears(startYear, endYear){
