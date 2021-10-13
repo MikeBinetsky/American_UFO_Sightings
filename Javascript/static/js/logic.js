@@ -13,24 +13,26 @@ function sleep(ms){
 //     }
 // )
 
+var alienIcon = L.icon({
+    iconUrl: 'alien_icon.png',
+    iconSize:     [38, 95], // size of the icon
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
 function createMap(ufoData, startingYear, endingYear) {
-
-    var street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    })
-
-    var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    var myMap = L.map("map", {
+        center: [30.0902, -95.7129],
+        zoom: 3.4
     });
+
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>&copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+    }).addTo(myMap)
+
 
     let years = checkYears(startingYear, endingYear)
     var start = years[0]
     var end = years[1]
-
-    var baseMaps = {
-        Street: street,
-        Topography: topo
-      };
 
     async function createMarkers(data){
         for (var i = 0; i < data.length; i++) {
@@ -42,19 +44,13 @@ function createMap(ufoData, startingYear, endingYear) {
                 if (latitude != NaN && longitude != NaN) {
                     var location = [latitude, longitude]    
                     console.log(location)
-                    L.marker(location)
-                    .bindPopup(`<h1>City: ${sighting.city}</h1> <hr> <h3>Shape: ${sighting.shape}</h3> <hr> <h3>Comments${sighting.comments}</h3>`)
+                    L.marker(location, {icon: alienIcon})
+                    .bindPopup(`<h1>City: ${sighting.city}</h1> <hr> <h3>Shape: ${sighting.shape}</h3> <hr> <h3>Comments: ${sighting.comments}</h3>`)
                     .addTo(myMap);
                     }
                     await sleep(100)
                 }}
     };
-
-    var myMap = L.map("map", {
-        center: [30.0902, -95.7129],
-        zoom: 3.4,
-        layers: [street, topo]
-    });
 
     createMarkers(ufoData)
 };
