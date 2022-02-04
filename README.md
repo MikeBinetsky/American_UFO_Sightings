@@ -10,3 +10,5 @@ For each of these, we also did comparisons with UFO and extraterrestrial related
 
 ## Javascript
 Using the same UFO sightings data, we converted the data into a usable format to import into a javascript mapping algorithm. From there we used the map to create pins on the map representing each of the sightings.
+
+![Javascript Map](Javascript/Map_img.PNG)
